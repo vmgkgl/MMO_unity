@@ -12,7 +12,7 @@ public class Managers : MonoBehaviour
     {
         get
         {
-            Init(); //d
+            Init();
             return s_Instance;
         }
     }
