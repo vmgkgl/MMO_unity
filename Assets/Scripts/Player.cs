@@ -6,13 +6,7 @@ public class Player : MonoBehaviour
 {
     void Start()
     {
-        Managers mg = Managers.GetInstance();
+        Managers mg = Managers.Instance;
         Debug.Log("mg : " + mg);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

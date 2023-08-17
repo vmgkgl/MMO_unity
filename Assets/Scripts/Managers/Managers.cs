@@ -6,12 +6,15 @@ using UnityEngine.PlayerLoop;
 
 public class Managers : MonoBehaviour
 {
-    static Managers Instance;
+    static Managers s_Instance;
 
-    public static Managers GetInstance()
+    public static Managers Instance
     {
-        Init();
-        return Instance;
+        get
+        {
+            Init();
+            return s_Instance;
+        }
     }
 
     private void Start()
@@ -21,18 +24,16 @@ public class Managers : MonoBehaviour
 
     private static void Init()
     {
-        if (Instance == null)
+        if (s_Instance == null)
         {
             GameObject go = GameObject.Find("@Managers");
             if (go == null)
             {
                 go = new GameObject("@Managers");
-                Instance = go.AddComponent<Managers>();
+                s_Instance = go.AddComponent<Managers>();
             }
-            else
-            {
-                Instance = go.GetComponent<Managers>();
-            }
+            s_Instance = go.GetComponent<Managers>();
+            
         }
     }
 }
