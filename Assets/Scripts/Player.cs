@@ -1,25 +1,46 @@
 using UnityEngine;
+using System;
 
 public class Player : MonoBehaviour
 {
-    public float speed = 6.0f;
-    public float gravity = 0.0f;
+    public float _speed = 10.0f;
 
-    private Vector3 moveDirection = Vector3.zero;
-    private CharacterController controller;
-
+    
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        Managers.Input.KeyAction -= OnKeyboard;
+        Managers.Input.KeyAction += OnKeyboard;
     }
 
     void Update()
     {
-        Vector3 horizontalInput = new Vector3(-Input.GetAxis("Horizontal"), 0.0f, -Input.GetAxis("Vertical"));
-        Vector3 horizontalDirection = transform.TransformDirection(horizontalInput);
-        moveDirection = horizontalDirection * speed;
+        //OnKeyboard();
+    }
 
-        moveDirection.y -= gravity * Time.deltaTime;
-        controller.Move(moveDirection * Time.deltaTime);
+    private void OnKeyboard()
+    {
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.forward), 0.2f);
+            transform.position += Vector3.forward * Time.deltaTime * _speed;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.back), 0.2f);
+            transform.position += Vector3.back * Time.deltaTime * _speed;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.right), 0.2f);
+            transform.position += Vector3.right * Time.deltaTime * _speed;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.left), 0.2f);
+            transform.position += Vector3.left * Time.deltaTime * _speed;
+        }
     }
 }
