@@ -6,7 +6,7 @@ using UnityEngine.PlayerLoop;
 
 public class Managers : MonoBehaviour
 {
-    static Managers s_Instance;  //유일성
+    static Managers s_Instance;
     static Managers Instance
     {
         get

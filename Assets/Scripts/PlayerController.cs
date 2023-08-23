@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class Player : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public float _speed = 10.0f;
 
