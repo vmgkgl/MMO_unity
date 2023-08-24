@@ -14,12 +14,6 @@ public class PlayerController : MonoBehaviour
         Managers.Input.KeyAction -= OnKeyboard;
         Managers.Input.KeyAction += OnKeyboard;
     }
-
-    void Update()
-    {
-        //OnKeyboard();
-    }
-
     private void OnCollisionStay(Collision collision)
     {
         if (collision.collider.CompareTag("Ground"))
