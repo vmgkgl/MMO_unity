@@ -12,8 +12,21 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.position = _player.transform.position + _delta;
-        transform.LookAt(_player.transform);
+        if (_mode == Define.CameraMode.QuaterView)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(_player.transform.position, _delta, out hit, _delta.magnitude,
+                    LayerMask.GetMask("Wall")))
+            {
+                float dist = (hit.point - _player.transform.position).magnitude * 0.8f;
+                transform.position = _player.transform.position + _delta.normalized * dist;
+            }
+            else
+            {
+                transform.position = _player.transform.position + _delta;
+                transform.LookAt(_player.transform);
+            }
+        }
     }
 
     public void SetQuaterView(Vector3 delta)

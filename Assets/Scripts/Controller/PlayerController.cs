@@ -9,11 +9,11 @@ public class PlayerController : MonoBehaviour
 
     private bool _moveToDest = false;
     private Vector3 _destPos;
+
+    private float wait_run_ration = 0;
     
     void Start()
     {
-        Managers.Input.KeyAction -= OnKeyboard;
-        Managers.Input.KeyAction += OnKeyboard;
         Managers.Input.MouseAction -= OnMouseClicked;
         Managers.Input.MouseAction += OnMouseClicked;
     }
@@ -39,6 +39,21 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+
+        if (_moveToDest)
+        {
+            wait_run_ration = Mathf.Lerp(wait_run_ration, 1, 10 * Time.deltaTime);
+            Animator anim = GetComponent<Animator>();
+            anim.SetFloat("wait_run_ratio", wait_run_ration);
+            anim.Play("WAIT_RUN");
+        }
+        else
+        {
+            wait_run_ration = Mathf.Lerp(wait_run_ration, 0, 10 * Time.deltaTime);
+            Animator anim = GetComponent<Animator>();
+            anim.SetFloat("wait_run_ratio", wait_run_ration);
+            anim.Play("WAIT_RUN");
+        }
     }
 
     private void OnMouseClicked(Define.MouseEvent obj)
@@ -57,34 +72,5 @@ public class PlayerController : MonoBehaviour
             _destPos = hit.point;
             _moveToDest = true;
         }
-    }
-
-    private void OnKeyboard()
-    {
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.forward), 0.2f);
-            transform.position += Vector3.forward * Time.deltaTime * _speed;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.back), 0.2f);
-            transform.position += Vector3.back * Time.deltaTime * _speed;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.right), 0.2f);
-            transform.position += Vector3.right * Time.deltaTime * _speed;
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Vector3.left), 0.2f);
-            transform.position += Vector3.left * Time.deltaTime * _speed;
-        }
-
-        _moveToDest = false;
     }
 }
