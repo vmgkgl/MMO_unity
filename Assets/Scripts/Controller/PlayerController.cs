@@ -1,67 +1,79 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float _speed = 10.0f;
-
-    private bool _moveToDest = false;
-    private Vector3 _destPos;
-
-    private float wait_run_ration = 0;
+    public float _speed = 3.0f;
     
+    private Vector3 _destPos;
     void Start()
     {
-        Managers.Input.MouseAction -= OnMouseClicked;
         Managers.Input.MouseAction += OnMouseClicked;
     }
+    public enum PlayerState
+    {
+        Die,
+        Moving,
+        Idle,
+    }
 
+    private PlayerState _state = PlayerState.Idle;
+    
     private void Update()
     {
-        if (_moveToDest)
+        switch (_state)
         {
-            Vector3 dir = _destPos - transform.position;
-            if (dir.magnitude < 0.0001f)
-            {
-                _moveToDest = false;
-            }
-            else
-            {
-                float moveDist = Math.Clamp(_speed * Time.deltaTime, 0, dir.magnitude);
-                transform.position += dir.normalized * moveDist;
+            case PlayerState.Die :
+                UpdateDie();
+                break;
+            case PlayerState.Moving :
+                UpdateMoving();
+                break;
+            case PlayerState.Idle :
+                UpdateIdle();
+                break;
+        }
+    }
 
-                if (dir.magnitude > 0.01f)
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir),
-                        30 * Time.deltaTime);
-                }
-            }
-        }
+   private void UpdateIdle()
+    {
+        Animator anim = GetComponent<Animator>();
+        anim.SetFloat("speed",0);
+    }
 
-        if (_moveToDest)
+    private void UpdateMoving()
+    {
+        Vector3 dir = _destPos - transform.position;
+        if (dir.magnitude < 0.00001f)
         {
-            wait_run_ration = Mathf.Lerp(wait_run_ration, 1, 10 * Time.deltaTime);
-            Animator anim = GetComponent<Animator>();
-            anim.SetFloat("wait_run_ratio", wait_run_ration);
-            anim.Play("WAIT_RUN");
+            _state = PlayerState.Idle;
+            return;
         }
-        else
+        
+        float moveDist = Math.Clamp(_speed * Time.deltaTime, 0, dir.magnitude);
+        transform.position += dir.normalized * moveDist;
+        if (dir.magnitude > 0.01f)
         {
-            wait_run_ration = Mathf.Lerp(wait_run_ration, 0, 10 * Time.deltaTime);
-            Animator anim = GetComponent<Animator>();
-            anim.SetFloat("wait_run_ratio", wait_run_ration);
-            anim.Play("WAIT_RUN");
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir),
+                10 * Time.deltaTime);
         }
+        
+        Animator anim = GetComponent<Animator>();
+        anim.SetFloat("speed", _speed);
+    }
+
+    private void UpdateDie()
+    {
+        Debug.Log("die");
     }
 
     private void OnMouseClicked(Define.MouseEvent obj)
     {
-        if (obj != Define.MouseEvent.Click)
+        if (_state == PlayerState.Die)
             return;
-        
-        Debug.Log("OnMouseClicked !");
         
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Debug.DrawRay(Camera.main.transform.position, ray.direction * 100, Color.red, 1.0f);
@@ -70,7 +82,7 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Wall")))
         {
             _destPos = hit.point;
-            _moveToDest = true;
+            _state = PlayerState.Moving;
         }
     }
 }
