@@ -35,20 +35,21 @@ public class UI_Button : UI_Base
         Bind<GameObject>(typeof(GameObjects));
         Bind<Image>(typeof(Images));
         
-        //Get<TextMeshProUGUI>((int)Texts.ScoreText).text = "Bind test";
         GetTextMeshProUGUI((int)Texts.ScoreText).text = "Bind Test2";
 
         GameObject go = GetImage((int)Images.ItemIcon).gameObject;
-        UI_EventHander evt = go.GetComponent<UI_EventHander>();
-        evt.OnDragHandler += ((PointerEventData data) => { go.transform.position = data.position; });
-    }
 
+        AddUIEvent(go, (PointerEventData data) => { go.transform.position = data.position; }, Define.UIEvent.Drag);
+        
+        GetButton((int)Buttons.PointButton).gameObject.AddUIEvent(OnButtonClicked);
+        
+    }
 
     private int _score = 0;
     
-    public void OnButtonClicked()
+    public void OnButtonClicked(PointerEventData pointerEventData)
     {
         _score++;
-        //_text.text = $"점수 : {_score}";
+        GetTextMeshProUGUI((int)Texts.ScoreText).text = $"점수 : {_score}";
     }
 }
